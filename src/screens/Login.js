@@ -32,8 +32,14 @@ class HomeScreen extends React.Component {
       password = this.state.password
     }
     this.props.loginRequest(username, password)
+  }
+
+  componentDidUpdate() {
     if (this.props.loginError) {
       DropDownHolder.getDropDown().alertWithType('error', 'Error', this.props.loginError)
+    }
+    if (this.props.logined) {
+      this.props.navigation.navigate('Home')
     }
   }
 
