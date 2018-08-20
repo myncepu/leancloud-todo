@@ -1,46 +1,55 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+import { Card, CardItem, Text, Body } from 'native-base'
 import { connect } from 'react-redux'
 
-import { loginRequest } from '../actions/user'
-import { DropDownHolder }from '../utils/DropDownHolder'
-
-const TEMP_USERNAME = 'yan'
-const TEMP_PASSWORD = 'yan'
 class HomeScreen extends React.Component {
-
   static propTypes = {
-    logined: PropTypes.bool,
-    loginRequest: PropTypes.func,
-    loginError: PropTypes.string,
-  }
-
-  handleLogin = () => {
-    this.props.loginRequest(TEMP_USERNAME, TEMP_PASSWORD)
-    if (this.props.loginError) {
-      DropDownHolder.getDropDown().alertWithType('error', 'Error', this.props.loginError)
-    }
+    userInfo: PropTypes.object,
+    username: PropTypes.string,
+    // createdAt: PropTypes.date,
+    // updatedAt: PropTypes.date,
+    emailVerified: PropTypes.bool,
+    mobilePhoneVerified: PropTypes.bool,
   }
 
   render() {
+    const {
+      username,
+      createdAt,
+      updatedAt,
+      emailVerified,
+      mobilePhoneVerified,
+    } = this.props
+
+
     return (
       <View style={styles.container}>
-        <TextInput
-          placeholder="username"
-          style={{ width: '100%', height: 30, borderWidth: 1, margin: 5, paddingHorizontal: 5 }}
-        />
-        <TextInput
-          placeholder="password"
-          style={{ width: '100%', height: 30, borderWidth: 1, margin: 5, paddingHorizontal: 5 }}
-          secureTextEntry
-        />
-        <TouchableOpacity
-          style={{ marginTop: 20, padding: 10, borderRadius: 5, alignSelf: 'flex-start', backgroundColor: 'green' }}
-          onPress={this.handleLogin}
-        >
-          <Text style={{ color: 'white' }}>LOGIN</Text>
-        </TouchableOpacity>
+        <Card style={{ width: '100%' }}>
+          <CardItem header>
+            <Text>{username.toUpperCase()}</Text>
+          </CardItem>
+          <CardItem>
+            <Body>
+              <Text>
+                { `ceated at ${createdAt}` }
+              </Text>
+              <Text>
+                { `updated at ${updatedAt}` }
+              </Text>
+              <Text>
+                { `emailVerified: ${emailVerified}` }
+              </Text>
+              <Text>
+                { `mobilePhoneVerified: ${mobilePhoneVerified}` }
+              </Text>
+            </Body>
+          </CardItem>
+          <CardItem footer>
+            <Text>John soft</Text>
+          </CardItem>
+        </Card>
       </View>
     )
   }
@@ -57,16 +66,21 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = state => {
+  const {
+    username,
+    createdAt,
+    updatedAt,
+    emailVerified,
+    mobilePhoneVerified
+  } = state.user.userInfo
+
   return {
-    logined: state.user.logined,
-    loginError: state.user.error,
+    username,
+    createdAt,
+    updatedAt,
+    emailVerified,
+    mobilePhoneVerified,
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  loginRequest: (username, password) => {
-    dispatch(loginRequest(username, password))
-  }
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)
+export default connect(mapStateToProps)(HomeScreen)
