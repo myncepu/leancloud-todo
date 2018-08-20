@@ -4,7 +4,6 @@ const initialState = {
   logined: false,
   logining: false,
   error: null,
-  info: null,
 }
 
 const userReducer = (state = initialState, action) => {
@@ -20,7 +19,7 @@ const userReducer = (state = initialState, action) => {
         logined: true,
         logining: false,
         error: null,
-        info: action.result,
+        userInfo: action.userInfo,
       }
     case LOGIN_FAIL:
       return {
