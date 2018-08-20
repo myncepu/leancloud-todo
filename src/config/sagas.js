@@ -8,7 +8,12 @@ function* login(action) {
     const username = action.username
     const password = action.password
     const response = yield User.logIn(username, password)
-    yield put({ type: LOGIN_SUCCESS, result: response })
+    const userInfo = {
+      ...response.attributes,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+    }
+    yield put({ type: LOGIN_SUCCESS, userInfo: userInfo })
   } catch(e) {
     yield put({ type: LOGIN_FAIL, errorMessage: e.message })
   }
