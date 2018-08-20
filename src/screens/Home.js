@@ -33,7 +33,7 @@ class HomeScreen extends React.Component {
           <CardItem>
             <Body>
               <Text>
-                { `ceated at ${createdAt}` }
+                { `created at ${createdAt}` }
               </Text>
               <Text>
                 { `updated at ${updatedAt}` }
