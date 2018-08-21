@@ -17,6 +17,7 @@ export default ({ theme, primaryColor }) => {
     $border: '#E2E2E2',
     $inputText: '#797979',
     $lightGray: '#D9D9D9',
+    $slightGray: '#F4F4F4',
 
     $rem: width > 340 ? 18 : 16,
 
