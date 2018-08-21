@@ -1,4 +1,11 @@
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAIL } from '../actions/user'
+import {
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGIN_FAIL,
+  REGISTER_REQUEST,
+  REGISTER_SUCCESS,
+  REGISTER_FAIL,
+} from '../actions/user'
 
 const initialState = {
   logined: false,
@@ -22,6 +29,26 @@ const userReducer = (state = initialState, action) => {
         userInfo: action.userInfo,
       }
     case LOGIN_FAIL:
+      return {
+        ...state,
+        logined: false,
+        logining: false,
+        error: action.errorMessage,
+      }
+    case REGISTER_REQUEST:
+      return {
+        ...state,
+        logining: true,
+      }
+    case REGISTER_SUCCESS:
+      return {
+        ...state,
+        logined: true,
+        logining: false,
+        error: null,
+        userInfo: action.userInfo,
+      }
+    case REGISTER_FAIL:
       return {
         ...state,
         logined: false,
