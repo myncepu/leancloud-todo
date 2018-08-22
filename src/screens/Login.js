@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Dimensions, KeyboardAvoidingView, View } from 'react-native'
 import { connect } from 'react-redux'
-import { Item, Input, Label, Button, Text } from 'native-base'
+import { connectStyle, Item, Input, Label, Button, Text } from 'native-base'
 
 import { loginRequest, registerRequest } from '../actions/user'
 import { DropDownHolder }from '../utils/DropDownHolder'
@@ -64,19 +64,19 @@ class HomeScreen extends React.Component {
           enabled
           style={{ flex: 1, width, justifyContent: 'center', alignItems: 'center' }}
         >
-          <View style={{ paddingVertical: 20 }}>
+          <View style={{ paddingBottom: 100 }}>
             <LogoText>LeanTodo</LogoText>
           </View>
           <View style={{ width: '100%', paddingHorizontal: 20, backgroundColor: '#FFFFFF' }}>
             <Item floatingLabel>
-              <Label>Username</Label>
+              <Label>用户名</Label>
               <Input
                 onChangeText={username => this.setState({username})}
                 autoCapitalize="none"
               />
             </Item>
             <Item floatingLabel>
-              <Label>Password</Label>
+              <Label>密码</Label>
               <Input
                 onChangeText={password => this.setState({password})}
                 autoCapitalize="none"
@@ -84,12 +84,12 @@ class HomeScreen extends React.Component {
               />
             </Item>
           </View>
-          <View style={{ width, flexDirection: 'row', paddingVertical: 30 }}>
+          <View style={{ width, flexDirection: 'row', paddingTop: 50 }}>
             <Button onPress={this.handleLogin} style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}>
-              <Text>LOGIN</Text>
+              <Text>登陆</Text>
             </Button>
             <Button bordered onPress={this.handleRegister} style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ color: 'orange' }}>REGISTER</Text>
+              <Text>注册</Text>
             </Button>
           </View>
         </KeyboardAvoidingView>
@@ -114,4 +114,5 @@ const mapDispatchToProps = dispatch => ({
   },
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)
+const StyledHomeScreen = connectStyle('')(HomeScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(StyledHomeScreen)
