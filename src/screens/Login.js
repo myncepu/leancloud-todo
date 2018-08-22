@@ -1,14 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Dimensions, KeyboardAvoidingView, View } from 'react-native'
 import { connect } from 'react-redux'
+import { Item, Input, Label, Button, Text } from 'native-base'
 
 import { loginRequest, registerRequest } from '../actions/user'
 import { DropDownHolder }from '../utils/DropDownHolder'
-import { H1 } from '../components/Text'
+import { LogoText } from '../components/Text'
+import { Container } from '../components/Container'
 
 const TEMP_USERNAME = 'yan'
 const TEMP_PASSWORD = 'yan'
+
+const {width} = Dimensions.get('window')
+
 class HomeScreen extends React.Component {
   constructor(props) {
     super(props)
@@ -53,47 +58,45 @@ class HomeScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <H1>LeanTodo</H1>
-        <TextInput
-          placeholder="username"
-          style={{ width: '100%', height: 30, borderWidth: 1, margin: 5, paddingHorizontal: 5 }}
-          onChangeText={username => this.setState({username})}
-          autoCapitalize="none"
-        />
-        <TextInput
-          placeholder="password"
-          style={{ width: '100%', height: 30, borderWidth: 1, margin: 5, paddingHorizontal: 5 }}
-          onChangeText={password => this.setState({password})}
-          autoCapitalize="none"
-          secureTextEntry
-        />
-        <TouchableOpacity
-          style={{ marginTop: 20, padding: 10, borderRadius: 5, alignSelf: 'flex-start', backgroundColor: 'green' }}
-          onPress={this.handleLogin}
+      <Container>
+        <KeyboardAvoidingView
+          behavior="padding"
+          enabled
+          style={{ flex: 1, width, justifyContent: 'center', alignItems: 'center' }}
         >
-          <Text style={{ color: 'white' }}>LOGIN</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ marginTop: 20, padding: 10, borderRadius: 5, alignSelf: 'flex-start', backgroundColor: 'green' }}
-          onPress={this.handleRegister}
-        >
-          <Text style={{ color: 'white' }}>REGISTER</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={{ paddingVertical: 20 }}>
+            <LogoText>LeanTodo</LogoText>
+          </View>
+          <View style={{ width: '100%', paddingHorizontal: 20, backgroundColor: '#FFFFFF' }}>
+            <Item floatingLabel>
+              <Label>Username</Label>
+              <Input
+                onChangeText={username => this.setState({username})}
+                autoCapitalize="none"
+              />
+            </Item>
+            <Item floatingLabel>
+              <Label>Password</Label>
+              <Input
+                onChangeText={password => this.setState({password})}
+                autoCapitalize="none"
+                secureTextEntry
+              />
+            </Item>
+          </View>
+          <View style={{ width, flexDirection: 'row', paddingVertical: 30 }}>
+            <Button onPress={this.handleLogin} style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}>
+              <Text>LOGIN</Text>
+            </Button>
+            <Button bordered onPress={this.handleRegister} style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: 'orange' }}>REGISTER</Text>
+            </Button>
+          </View>
+        </KeyboardAvoidingView>
+      </Container>
     )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-})
 
 const mapStateToProps = state => {
   return {
