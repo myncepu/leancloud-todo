@@ -1,4 +1,4 @@
-import { H1 } from './Text'
+import LogoText from './LogoText'
 import styles from './styles'
 
-export { H1, styles }
+export { LogoText, styles }
