@@ -1,8 +1,8 @@
 import React from 'react'
 import { StyleProvider } from 'native-base'
 import { createSwitchNavigator } from 'react-navigation'
-import getTheme from '../native-base-theme/components'
-import orange from '../native-base-theme/variables/orange'
+import getTheme from './native-base-theme/components'
+import orange from './native-base-theme/variables/orange'
 
 import LoginScreen from '../screens/Login'
 import HomeScreen from '../screens/Home'
