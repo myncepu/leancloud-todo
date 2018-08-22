@@ -1,14 +1,13 @@
-import variable from "./../variables/platform";
+import variable from './../variables/platform'
 
 export default (variables = variable) => {
   const logoTextTheme = {
-    "textContent": {
+    'textContent': {
       fontSize: variables.fontSizeLogo,
       fontFamily: variables.fontFamily,
       color: variables.brandPrimary,
     }
-  };
-  console.log('logoTextTheme', logoTextTheme)
+  }
 
-  return logoTextTheme;
-};
+  return logoTextTheme
+}
