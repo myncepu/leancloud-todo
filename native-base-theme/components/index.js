@@ -41,6 +41,7 @@ import listItemTheme from "./ListItem";
 import formTheme from "./Form";
 import separatorTheme from "./Separator";
 import pickerTheme from "./Picker"
+import logoTextTheme from './LogoText'
 import variable from "./../variables/platform";
 
 export default (variables = variable) => {
@@ -210,6 +211,9 @@ export default (variables = variable) => {
     },
     "NativeBase.Thumbnail": {
       ...thumbnailTheme(variables)
+    },
+    "NativeBase.LogoText": {
+      ...logoTextTheme(variables)
     }
   };
 
