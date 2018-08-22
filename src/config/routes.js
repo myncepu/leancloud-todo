@@ -1,4 +1,8 @@
+import React from 'react'
+import { StyleProvider } from 'native-base'
 import { createSwitchNavigator } from 'react-navigation'
+import getTheme from '../../native-base-theme/components'
+import orange from '../../native-base-theme/variables/orange'
 
 import LoginScreen from '../screens/Login'
 import HomeScreen from '../screens/Home'
@@ -17,4 +21,8 @@ const AppNavigator = createSwitchNavigator({
   initialRouteName: 'Login',
 })
 
-export default AppNavigator
+export default () => (
+  <StyleProvider style={getTheme(orange)}>
+    <AppNavigator />
+  </StyleProvider>
+)
