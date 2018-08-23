@@ -1,8 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ActivityIndicator, Dimensions, KeyboardAvoidingView, View } from 'react-native'
 import { connect } from 'react-redux'
 import { connectStyle, Item, Input, Label, Button, Text } from 'native-base'
+import {
+  NetInfo,
+  ActivityIndicator,
+  Dimensions,
+  KeyboardAvoidingView,
+  View
+} from 'react-native'
 
 import { loginRequest, registerRequest } from '../actions/user'
 import { DropDownHolder }from '../utils/DropDownHolder'
@@ -45,6 +51,20 @@ class LoginScreen extends React.Component {
 
   handleRegister = () => {
     this.props.navigation.navigate('Register')
+  }
+
+  componentDidMount = () => {
+    NetInfo.addEventListener('connectionChange', this.handleConnectivityChange)
+  }
+
+  componentWillUnmount = () => {
+    // eslint-disable-next-line
+    console.log('connectionInfo', connectionInfo)
+  }
+
+  handleConnectivityChange = (connectionInfo) => {
+    // eslint-disable-next-line
+    console.log('connectionInfo', connectionInfo)
   }
 
   // componentDidUpdate(prevProps) {
