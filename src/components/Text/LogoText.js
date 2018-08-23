@@ -10,7 +10,6 @@ class LogoText extends Component {
   }
 
   render() {
-    console.log('this.props.style', this.props.style)
     return (
       <Text style={this.props.style.textContent}>
         {this.props.children}
