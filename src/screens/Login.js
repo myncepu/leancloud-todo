@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 
 import { loginRequest, registerRequest } from '../actions/user'
+import { changeConectionStatus } from '../actions/network'
 import { DropDownHolder }from '../utils/DropDownHolder'
 import { LogoText } from '../components/Text'
 import { Container } from '../components/Container'
@@ -65,6 +66,7 @@ class LoginScreen extends React.Component {
   handleConnectivityChange = (connectionInfo) => {
     // eslint-disable-next-line
     console.log('connectionInfo', connectionInfo)
+    this.props.changeConectionStatus(connectionInfo)
   }
 
   // componentDidUpdate(prevProps) {
@@ -134,6 +136,9 @@ const mapDispatchToProps = dispatch => ({
   },
   registerRequest: (username, password) => {
     dispatch(registerRequest(username, password))
+  },
+  changeConectionStatus: connectionInfo => {
+    dispatch(changeConectionStatus(connectionInfo))
   },
 })
 
