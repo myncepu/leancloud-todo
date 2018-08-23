@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Dimensions, KeyboardAvoidingView, View } from 'react-native'
+import { ActivityIndicator, Dimensions, KeyboardAvoidingView, View } from 'react-native'
 import { connect } from 'react-redux'
 import { connectStyle, Item, Input, Label, Button, Text } from 'native-base'
 
@@ -14,7 +14,7 @@ const TEMP_PASSWORD = 'yan'
 
 const {width} = Dimensions.get('window')
 
-class HomeScreen extends React.Component {
+class LoginScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -25,6 +25,7 @@ class HomeScreen extends React.Component {
 
   static propTypes = {
     logined: PropTypes.bool,
+    logining: PropTypes.bool,
     loginRequest: PropTypes.func,
     error: PropTypes.string,
   }
@@ -37,20 +38,17 @@ class HomeScreen extends React.Component {
       password = this.state.password
     }
     this.props.loginRequest(username, password)
-  }
-
-  handleRegister = () => {
-    const { username, password } = this.state
-    this.props.registerRequest(username, password)
     if (this.props.error) {
       DropDownHolder.getDropDown().alertWithType('error', 'Error', this.props.error)
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.error !== this.props.error) {
-      DropDownHolder.getDropDown().alertWithType('error', 'Error', this.props.error)
-    }
+  handleRegister = () => {
+    this.props.navigation.navigate('Register')
+  }
+
+  // componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     if (this.props.logined) {
       this.props.navigation.navigate('Home')
     }
@@ -85,7 +83,11 @@ class HomeScreen extends React.Component {
             </Item>
           </View>
           <View style={{ width, flexDirection: 'row', paddingTop: 50 }}>
-            <Button onPress={this.handleLogin} style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}>
+            <Button
+              onPress={this.handleLogin}
+              style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}
+            >
+              { this.props.logining && <ActivityIndicator color="white"/> }
               <Text>登陆</Text>
             </Button>
             <Button bordered onPress={this.handleRegister} style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}>
@@ -102,6 +104,7 @@ const mapStateToProps = state => {
   return {
     logined: state.user.logined,
     error: state.user.error,
+    logining: state.user.logining,
   }
 }
 
@@ -114,5 +117,5 @@ const mapDispatchToProps = dispatch => ({
   },
 })
 
-const StyledHomeScreen = connectStyle('')(HomeScreen)
+const StyledHomeScreen = connectStyle('')(LoginScreen)
 export default connect(mapStateToProps, mapDispatchToProps)(StyledHomeScreen)
