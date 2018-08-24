@@ -16,9 +16,6 @@ import { DropDownHolder }from '../utils/DropDownHolder'
 import { LogoText } from '../components/Text'
 import { Container } from '../components/Container'
 
-const TEMP_USERNAME = 'yan'
-const TEMP_PASSWORD = 'yan'
-
 const {width} = Dimensions.get('window')
 
 class LoginScreen extends React.Component {
@@ -57,13 +54,10 @@ class LoginScreen extends React.Component {
     }
   }
   handleLogin = () => {
-    let username = TEMP_USERNAME
-    let password = TEMP_PASSWORD
     if (this.state.username && this.state.password) {
-      username = this.state.username
-      password = this.state.password
+      const { username, password } = this.state
+      this.props.loginRequest(username, password)
     }
-    this.props.loginRequest(username, password)
     if (this.props.error) {
       DropDownHolder.getDropDown().alertWithType('error', 'Error', this.props.error)
     }
