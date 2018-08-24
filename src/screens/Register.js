@@ -33,20 +33,23 @@ class RegisterScreen extends React.Component {
     if (password1 != password2) {
       DropDownHolder
         .getDropDown()
-        .alertWithType('error', 'Error', '两次输入的密码不一致，请重新输入')
+        .alertWithType('error', '错误', '两次输入的密码不一致，请重新输入')
       return
     }
     this.props.registerRequest(username, password1)
     if (this.props.error) {
-      DropDownHolder.getDropDown().alertWithType('error', 'Error', this.props.error)
+      DropDownHolder.getDropDown().alertWithType('error', '错误', this.props.error)
     }
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.error !== this.props.error) {
-      DropDownHolder.getDropDown().alertWithType('error', 'Error', this.props.error)
+      DropDownHolder.getDropDown().alertWithType('error', '错误', this.props.error)
     }
     if (this.props.registered) {
+      DropDownHolder
+        .getDropDown()
+        .alertWithType('success', '注册成功', '注册成功，返回登陆界面')
       this.props.navigation.navigate('Login')
     }
   }
