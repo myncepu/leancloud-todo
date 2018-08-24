@@ -1,16 +1,23 @@
 import React from 'react'
-import { AsyncStorage, StyleSheet, SafeAreaView } from 'react-native'
+import PropTypes from 'prop-types'
+import { StyleSheet, SafeAreaView } from 'react-native'
 import { Spinner } from 'native-base'
+import { connect } from 'react-redux'
 
 class LoaddingScreen extends React.Component {
-  constructor() {
-    super()
-    this._bootstrapAsync()
+  static propTypes = {
+    sessionToken: PropTypes.string,
   }
 
-  _bootstrapAsync = async () => {
-    const sessionToken = await AsyncStorage.getItem('sessionToken')
-    this.props.navigation.navigate(sessionToken ? 'Auth' : 'Auth')
+  _bootstrapAsync = () => {
+    const sessionToken = this.props.sessionToken
+    if (sessionToken != '') {
+      this.props.navigation.navigate(sessionToken ? 'Auth' : 'Auth')
+    }
+  }
+
+  componentDidMount() {
+    this._bootstrapAsync()
   }
 
   render() {
@@ -30,4 +37,15 @@ const styles = StyleSheet.create({
   },
 })
 
-export default LoaddingScreen
+const mapStateToProps = state => {
+  let sessionToken = ''
+  if (state.user && state.user.userInfo) {
+    sessionToken = state.user.userInfo.sessionToken
+  }
+
+  return {
+    sessionToken
+  }
+}
+
+export default connect(mapStateToProps)(LoaddingScreen)
