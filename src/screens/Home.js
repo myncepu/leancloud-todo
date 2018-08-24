@@ -1,8 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { StyleSheet, View } from 'react-native'
-import { Card, CardItem, Text, Body } from 'native-base'
+import { Button, Card, CardItem, Text, Body } from 'native-base'
 import { connect } from 'react-redux'
+import { User } from 'leancloud-storage'
+
+import { logOut } from '../actions/user'
+import { DropDownHolder }from '../utils/DropDownHolder'
 
 class HomeScreen extends React.Component {
   static propTypes = {
@@ -12,6 +16,26 @@ class HomeScreen extends React.Component {
     // updatedAt: PropTypes.date,
     emailVerified: PropTypes.bool,
     mobilePhoneVerified: PropTypes.bool,
+    sessionToken: PropTypes.string,
+    logOut: PropTypes.func,
+  }
+
+  handleLogout = () => {
+    this.props.logOut()
+    this.props.navigation.navigate('Login')
+  }
+
+  logInWithSessionToken = async (sessionToken) => {
+    try {
+      await User.become(sessionToken)
+    } catch (e) {
+      DropDownHolder.getDropDown().alertWithType('error', '错误', e.message)
+      this.props.navigation.navigate('Login')
+    }
+  }
+
+  componentDidMount() {
+    this.logInWithSessionToken(this.props.sessionToken)
   }
 
   render() {
@@ -22,7 +46,6 @@ class HomeScreen extends React.Component {
       emailVerified,
       mobilePhoneVerified,
     } = this.props
-
 
     return (
       <View style={styles.container}>
@@ -50,6 +73,12 @@ class HomeScreen extends React.Component {
             <Text>John soft</Text>
           </CardItem>
         </Card>
+        <Button
+          onPress={this.handleLogout}
+          style={{ margin: 10, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Text>退出登陆</Text>
+        </Button>
       </View>
     )
   }
@@ -71,7 +100,8 @@ const mapStateToProps = state => {
     createdAt,
     updatedAt,
     emailVerified,
-    mobilePhoneVerified
+    mobilePhoneVerified,
+    sessionToken,
   } = state.user.userInfo
 
   return {
@@ -80,7 +110,13 @@ const mapStateToProps = state => {
     updatedAt,
     emailVerified,
     mobilePhoneVerified,
+    sessionToken,
   }
 }
 
-export default connect(mapStateToProps)(HomeScreen)
+const mapDispatchToProps = dispatch => ({
+  logOut: () => {
+    dispatch(logOut())
+  },
+})
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)
