@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { connectStyle, Item, Input, Label, Button, Text } from 'native-base'
+import { connectStyle, Item, Input, Label, Icon, Button, Text } from 'native-base'
 import {
   NetInfo,
   ActivityIndicator,
@@ -35,8 +35,27 @@ class LoginScreen extends React.Component {
     logining: PropTypes.bool,
     loginRequest: PropTypes.func,
     error: PropTypes.string,
+    isConnected: PropTypes.bool,
   }
 
+  static navigationOptions = ({ navigation }) => {
+    const isConnected = navigation.getParam('isConnected', false)
+    const WarnButton = () => (
+      <Button
+        onPress={this.handleLogin}
+        transparent
+        style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}
+      >
+        <Icon name="ios-warning" />
+      </Button>
+    )
+    return {
+      headerStyle: {
+        borderBottomWidth: 0,
+      },
+      headerLeft: isConnected ? null : <WarnButton />,
+    }
+  }
   handleLogin = () => {
     let username = TEMP_USERNAME
     let password = TEMP_PASSWORD
@@ -59,20 +78,20 @@ class LoginScreen extends React.Component {
   }
 
   componentWillUnmount = () => {
-    // eslint-disable-next-line
-    console.log('connectionInfo', connectionInfo)
+    NetInfo.removeEventListener('connectionChange', this.handleConnectivityChange)
   }
 
   handleConnectivityChange = (connectionInfo) => {
-    // eslint-disable-next-line
-    console.log('connectionInfo', connectionInfo)
     this.props.changeConectionStatus(connectionInfo)
   }
 
-  // componentDidUpdate(prevProps) {
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    // componentDidUpdate() {
     if (this.props.logined) {
       this.props.navigation.navigate('Home')
+    }
+    if (this.props.isConnected && prevProps.isConnected != this.props.isConnected) {
+      this.props.navigation.setParams({ isConnected: this.props.isConnected })
     }
   }
 
@@ -127,6 +146,7 @@ const mapStateToProps = state => {
     logined: state.user.logined,
     error: state.user.error,
     logining: state.user.logining,
+    isConnected: state.network.isConnected,
   }
 }
 
