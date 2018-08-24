@@ -1,8 +1,16 @@
 import { CHANGE_CONNECTION_STATUS } from '../actions/network'
 
+const isConnected = (status) => {
+  if (status.toLowerCase() === 'none') {
+    return false
+  }
+  return true
+}
+
 const initialState = {
   connectionInfo: null,
   hasCheckedStatus: false,
+  isConnected: false,
 }
 
 const networkReducer = (state = initialState, action) => {
@@ -11,6 +19,7 @@ const networkReducer = (state = initialState, action) => {
       return {
         ...state,
         connectionInfo: action.connectionInfo,
+        isConnected: isConnected(action.connectionInfo.type),
         hasCheckedStatus: true,
       }
     default:
