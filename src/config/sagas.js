@@ -19,6 +19,7 @@ function* login(action) {
       ...response.attributes,
       createdAt: response.createdAt,
       updatedAt: response.updatedAt,
+      sessionToken: response._sessionToken,
     }
     yield put({ type: LOGIN_SUCCESS, userInfo: userInfo })
   } catch(e) {
