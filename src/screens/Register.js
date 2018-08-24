@@ -43,7 +43,7 @@ class RegisterScreen extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.error !== this.props.error) {
+    if (this.props.error && prevProps.error !== this.props.error) {
       DropDownHolder.getDropDown().alertWithType('error', '错误', this.props.error)
     }
     if (this.props.registered) {
