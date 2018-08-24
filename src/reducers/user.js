@@ -2,6 +2,7 @@ import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
+  LOGOUT,
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
@@ -12,6 +13,7 @@ const initialState = {
   logining: false,
   registered: false,
   error: null,
+  userInfo: null,
 }
 
 const userReducer = (state = initialState, action) => {
@@ -35,6 +37,11 @@ const userReducer = (state = initialState, action) => {
         ...state,
         logining: false,
         error: action.errorMessage,
+      }
+    case LOGOUT:
+      return {
+        ...state,
+        ...initialState,
       }
     case REGISTER_REQUEST:
       return {
