@@ -53,6 +53,7 @@ class LoginScreen extends React.Component {
       headerLeft: isConnected ? null : <WarnButton />,
     }
   }
+
   handleLogin = () => {
     if (this.state.username && this.state.password) {
       const { username, password } = this.state
@@ -69,6 +70,10 @@ class LoginScreen extends React.Component {
 
   componentDidMount = () => {
     NetInfo.addEventListener('connectionChange', this.handleConnectivityChange)
+    if (this.props.isConnected) {
+      this.props.navigation.setParams({ isConnected: this.props.isConnected })
+    }
+    // console.log('this.props.navigation', this.props.navigation)
   }
 
   componentWillUnmount = () => {
@@ -80,7 +85,6 @@ class LoginScreen extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    // componentDidUpdate() {
     if (this.props.logined) {
       this.props.navigation.navigate('Home')
     }
