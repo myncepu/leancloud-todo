@@ -24,12 +24,12 @@ class LoginScreen extends React.Component {
     this.state = {
       username: null,
       password: null,
+      logining: false,
     }
   }
 
   static propTypes = {
     logined: PropTypes.bool,
-    logining: PropTypes.bool,
     loginRequest: PropTypes.func,
     error: PropTypes.string,
     isConnected: PropTypes.bool,
@@ -55,12 +55,10 @@ class LoginScreen extends React.Component {
   }
 
   handleLogin = () => {
+    this.setState({ logining: true })
     if (this.state.username && this.state.password) {
       const { username, password } = this.state
       this.props.loginRequest(username, password)
-    }
-    if (this.props.error) {
-      DropDownHolder.getDropDown().alertWithType('error', 'Error', this.props.error)
     }
   }
 
@@ -73,7 +71,6 @@ class LoginScreen extends React.Component {
     if (this.props.isConnected) {
       this.props.navigation.setParams({ isConnected: this.props.isConnected })
     }
-    // console.log('this.props.navigation', this.props.navigation)
   }
 
   componentWillUnmount = () => {
@@ -87,9 +84,15 @@ class LoginScreen extends React.Component {
   componentDidUpdate(prevProps) {
     if (this.props.logined) {
       this.props.navigation.navigate('Home')
+      this.setState({ logining: false })
+    }
+    if (this.props.error && prevProps.error != this.props.error) {
+      DropDownHolder.getDropDown().alertWithType('error', 'Error', this.props.error)
+      this.setState({ logining: false })
     }
     if (this.props.isConnected && prevProps.isConnected != this.props.isConnected) {
       this.props.navigation.setParams({ isConnected: this.props.isConnected })
+      this.setState({ logining: false })
     }
   }
 
@@ -126,7 +129,7 @@ class LoginScreen extends React.Component {
               onPress={this.handleLogin}
               style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}
             >
-              { this.props.logining && <ActivityIndicator color="white"/> }
+              { this.state.logining && <ActivityIndicator color="white"/> }
               <Text>登陆</Text>
             </Button>
             <Button bordered onPress={this.handleRegister} style={{ flex: 1, marginHorizontal: 10, alignItems: 'center', justifyContent: 'center' }}>
@@ -143,7 +146,6 @@ const mapStateToProps = state => {
   return {
     logined: state.user.logined,
     error: state.user.error,
-    logining: state.user.logining,
     isConnected: state.network.isConnected,
   }
 }
