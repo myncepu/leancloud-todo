@@ -10,8 +10,6 @@ import {
 
 const initialState = {
   logined: false,
-  logining: false,
-  registered: false,
   error: null,
   userInfo: null,
 }
@@ -21,21 +19,17 @@ const userReducer = (state = initialState, action) => {
     case LOGIN_REQUEST:
       return {
         ...state,
-        logining: true,
       }
     case LOGIN_SUCCESS:
       return {
         ...state,
         logined: true,
-        logining: false,
-        registered: true,
         error: null,
         userInfo: action.userInfo,
       }
     case LOGIN_FAIL:
       return {
         ...state,
-        logining: false,
         error: action.errorMessage,
       }
     case LOGOUT:
@@ -50,7 +44,6 @@ const userReducer = (state = initialState, action) => {
     case REGISTER_SUCCESS:
       return {
         ...state,
-        registered: true,
         error: null,
         userInfo: action.userInfo,
       }
