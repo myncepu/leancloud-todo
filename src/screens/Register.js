@@ -24,7 +24,6 @@ class RegisterScreen extends React.Component {
   }
 
   static propTypes = {
-    logined: PropTypes.bool,
     error: PropTypes.string,
   }
 
@@ -94,7 +93,6 @@ class RegisterScreen extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    logined: state.user.logined,
     error: state.user.error,
     registered: state.user.registered,
   }
