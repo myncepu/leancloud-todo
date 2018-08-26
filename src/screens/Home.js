@@ -1,14 +1,34 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { StyleSheet, View } from 'react-native'
-import { Button, Card, CardItem, Text, Body } from 'native-base'
+import { FlatList, StyleSheet, SafeAreaView } from 'react-native'
 import { connect } from 'react-redux'
 import { User } from 'leancloud-storage'
+import {
+  Item,
+  Input,
+  connectStyle,
+  Button,
+  Text,
+} from 'native-base'
 
+import { ListItem as MyListItem, Separator } from '../components/List'
 import { logOut } from '../actions/user'
 import { DropDownHolder }from '../utils/DropDownHolder'
 
+
 class HomeScreen extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      TEMP_ITEMS: [
+        { id: '1', name: 'Simon Mignolet', complete: true },
+        { id: '2', name: 'Nathaniel Clyne', complete: false },
+        { id: '3', name: 'Dejan Lovren', complete: true },
+        { id: '4', name: 'Mama Sakho', complete: true },
+        { id: '5', name: 'Emre Can', complete: false },
+      ]
+    }
+  }
   static propTypes = {
     userInfo: PropTypes.object,
     username: PropTypes.string,
@@ -18,6 +38,25 @@ class HomeScreen extends React.Component {
     mobilePhoneVerified: PropTypes.bool,
     sessionToken: PropTypes.string,
     logOut: PropTypes.func,
+  }
+
+  static navigationOptions = ({ navigation }) => {
+    const logOut = navigation.getParam('logOut', () => null)
+    return {
+      title: 'LeanTodo',
+      headerStyle: {
+        borderBottomWidth: 0,
+      },
+      headerRight: (
+        <Button transparent
+          onPress={() => {
+            logOut()
+            navigation.navigate('Login')
+          }}>
+          <Text>退出登陆</Text>
+        </Button>
+      ),
+    }
   }
 
   handleLogout = () => {
@@ -36,50 +75,49 @@ class HomeScreen extends React.Component {
 
   componentDidMount() {
     this.logInWithSessionToken(this.props.sessionToken)
+    this.props.navigation.setParams({ logOut: this.props.logOut })
+  }
+
+  handlePress = id => {
+    this.setState({
+      TEMP_ITEMS: this.state.TEMP_ITEMS.map(item => {
+        if(item.id === id) {
+          return {
+            ...item,
+            complete: !item.complete
+          }
+        } else {
+          return item
+        }
+      })
+    })
   }
 
   render() {
-    const {
-      username,
-      createdAt,
-      updatedAt,
-      emailVerified,
-      mobilePhoneVerified,
-    } = this.props
-
     return (
-      <View style={styles.container}>
-        <Card style={{ width: '100%' }}>
-          <CardItem header>
-            <Text>{username.toUpperCase()}</Text>
-          </CardItem>
-          <CardItem>
-            <Body>
-              <Text>
-                { `created at ${createdAt}` }
-              </Text>
-              <Text>
-                { `updated at ${updatedAt}` }
-              </Text>
-              <Text>
-                { `emailVerified: ${emailVerified}` }
-              </Text>
-              <Text>
-                { `mobilePhoneVerified: ${mobilePhoneVerified}` }
-              </Text>
-            </Body>
-          </CardItem>
-          <CardItem footer>
-            <Text>John soft</Text>
-          </CardItem>
-        </Card>
-        <Button
-          onPress={this.handleLogout}
-          style={{ margin: 10, alignItems: 'center', justifyContent: 'center' }}
-        >
-          <Text>退出登陆</Text>
-        </Button>
-      </View>
+      <SafeAreaView style={styles.container}>
+        <Item>
+          <Input placeholder='你想完成什么?'/>
+        </Item>
+
+        <FlatList
+          ItemSeparatorComponent={() => (<Separator />)}
+          keyExtractor={item => item.id}
+          data={this.state.TEMP_ITEMS}
+          renderItem={({item, separators}) => (
+            <MyListItem
+              text={item.name}
+              separators={separators}
+              selected={item.complete}
+              onPress={() => this.handlePress(item.id)}
+              onShowUnderlay={separators.highlight}
+              onHideUnderlay={separators.unhighlight}
+              iconBackground='blue'
+            />
+          )}
+        />
+
+      </SafeAreaView>
     )
   }
 }
@@ -90,7 +128,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     alignItems: 'center',
-    justifyContent: 'center',
   },
 })
 
@@ -119,4 +156,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(logOut())
   },
 })
-export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)
+
+const StyledHomeScreen = connectStyle('')(HomeScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(StyledHomeScreen)
