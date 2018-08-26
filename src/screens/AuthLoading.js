@@ -3,16 +3,24 @@ import PropTypes from 'prop-types'
 import { StyleSheet, SafeAreaView } from 'react-native'
 import { Spinner } from 'native-base'
 import { connect } from 'react-redux'
+import { User } from 'leancloud-storage'
 
 class LoaddingScreen extends React.Component {
   static propTypes = {
     sessionToken: PropTypes.string,
   }
 
-  _bootstrapAsync = () => {
+  _bootstrapAsync = async () => {
     const sessionToken = this.props.sessionToken
-    if (sessionToken != '') {
-      this.props.navigation.navigate(sessionToken ? 'Auth' : 'Auth')
+    if (sessionToken === '') {
+      this.props.navigation.navigate('Auth')
+      return
+    }
+    try {
+      await User.become(sessionToken)
+      this.props.navigation.navigate('App')
+    } catch (e) {
+      this.props.navigation.navigate('Auth')
     }
   }
 
