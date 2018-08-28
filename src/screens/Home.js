@@ -3,15 +3,18 @@ import PropTypes from 'prop-types'
 import { FlatList, StyleSheet, SafeAreaView } from 'react-native'
 import { connect } from 'react-redux'
 import { User } from 'leancloud-storage'
+import uuidv4 from 'uuid/v4'
 import {
   Item,
+  ListItem,
+  Icon,
   Input,
   connectStyle,
   Button,
   Text,
 } from 'native-base'
 
-import { ListItem as MyListItem, Separator } from '../components/List'
+import { Separator } from '../components/List'
 import { logOut } from '../actions/user'
 import { DropDownHolder }from '../utils/DropDownHolder'
 
@@ -26,7 +29,8 @@ class HomeScreen extends React.Component {
         { id: '3', name: 'Dejan Lovren', complete: true },
         { id: '4', name: 'Mama Sakho', complete: true },
         { id: '5', name: 'Emre Can', complete: false },
-      ]
+      ],
+      newTodoName: null,
     }
   }
   static propTypes = {
@@ -78,7 +82,7 @@ class HomeScreen extends React.Component {
     this.props.navigation.setParams({ logOut: this.props.logOut })
   }
 
-  handlePress = id => {
+  handleTodoItemPress = id => {
     this.setState({
       TEMP_ITEMS: this.state.TEMP_ITEMS.map(item => {
         if(item.id === id) {
@@ -93,30 +97,52 @@ class HomeScreen extends React.Component {
     })
   }
 
+  changeNewTodoName = newTodoName => {
+    this.setState({ newTodoName })
+  }
+
+  createNewTodo = () => {
+    const newTodoName = this.state.newTodoName
+    if (newTodoName === null) {
+      return
+    }
+    this.setState({
+      TEMP_ITEMS: [
+        { id: uuidv4(), name: newTodoName, complete: false },
+        ...this.state.TEMP_ITEMS,
+      ],
+    })
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
         <Item>
-          <Input placeholder='你想完成什么?'/>
+          <Input
+            onSubmitEditing={this.createNewTodo}
+            onChangeText={this.changeNewTodoName}
+            placeholder='你想完成什么?'
+          />
         </Item>
 
         <FlatList
+          style={{ width: '100%' }}
           ItemSeparatorComponent={() => (<Separator />)}
           keyExtractor={item => item.id}
           data={this.state.TEMP_ITEMS}
-          renderItem={({item, separators}) => (
-            <MyListItem
-              text={item.name}
-              separators={separators}
-              selected={item.complete}
-              onPress={() => this.handlePress(item.id)}
-              onShowUnderlay={separators.highlight}
-              onHideUnderlay={separators.unhighlight}
-              iconBackground='blue'
-            />
+          renderItem={({ item }) => (
+            <ListItem
+              style={{ alignItems: 'center' }}
+              onPress={() => this.handleTodoItemPress(item.id)}
+            >
+              <Icon
+                style={{ fontSize: 20, paddingRight: 10 }}
+                name={`ios-checkmark-circle${item.complete ? '' : '-outline'}`}
+              />
+              <Text>{item.name}</Text>
+            </ListItem>
           )}
         />
-
       </SafeAreaView>
     )
   }
