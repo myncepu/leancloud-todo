@@ -9,6 +9,14 @@ import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
 } from '../actions/user'
+import {
+  TODO_FETCH_ALL,
+  fetchAllGenerator,
+  TODO_CREATE,
+  createTodoGenerator,
+  TODO_TOGGLE,
+  toggleTodoGenerator,
+} from '../actions/todos'
 
 function* login(action) {
   try {
@@ -49,4 +57,7 @@ function* register(action) {
 export default function* rootSaga() {
   yield takeEvery(LOGIN_REQUEST, login)
   yield takeEvery(REGISTER_REQUEST, register)
+  yield takeEvery(TODO_FETCH_ALL, fetchAllGenerator)
+  yield takeEvery(TODO_CREATE, createTodoGenerator)
+  yield takeEvery(TODO_TOGGLE, toggleTodoGenerator)
 }
