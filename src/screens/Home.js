@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { FlatList, StyleSheet, SafeAreaView } from 'react-native'
 import { connect } from 'react-redux'
 import { User } from 'leancloud-storage'
-import uuidv4 from 'uuid/v4'
 import {
   Item,
   ListItem,
@@ -16,6 +15,7 @@ import {
 
 import { Separator } from '../components/List'
 import { logOut } from '../actions/user'
+import { toggleTodo, fetchAll, createTodo } from '../actions/todos'
 import { DropDownHolder }from '../utils/DropDownHolder'
 
 
@@ -23,25 +23,18 @@ class HomeScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      TEMP_ITEMS: [
-        { id: '1', name: 'Simon Mignolet', complete: true },
-        { id: '2', name: 'Nathaniel Clyne', complete: false },
-        { id: '3', name: 'Dejan Lovren', complete: true },
-        { id: '4', name: 'Mama Sakho', complete: true },
-        { id: '5', name: 'Emre Can', complete: false },
-      ],
       newTodoName: null,
     }
   }
   static propTypes = {
-    userInfo: PropTypes.object,
-    username: PropTypes.string,
-    // createdAt: PropTypes.date,
-    // updatedAt: PropTypes.date,
-    emailVerified: PropTypes.bool,
-    mobilePhoneVerified: PropTypes.bool,
     sessionToken: PropTypes.string,
+    todos: PropTypes.array,
+    fetchTodoError: PropTypes.string,
+
     logOut: PropTypes.func,
+    fetchAll: PropTypes.func,
+    createTodo: PropTypes.func,
+    toggleTodo: PropTypes.func,
   }
 
   static navigationOptions = ({ navigation }) => {
@@ -78,23 +71,13 @@ class HomeScreen extends React.Component {
   }
 
   componentDidMount() {
+    this.props.fetchAll()
     this.logInWithSessionToken(this.props.sessionToken)
     this.props.navigation.setParams({ logOut: this.props.logOut })
   }
 
   handleTodoItemPress = id => {
-    this.setState({
-      TEMP_ITEMS: this.state.TEMP_ITEMS.map(item => {
-        if(item.id === id) {
-          return {
-            ...item,
-            complete: !item.complete
-          }
-        } else {
-          return item
-        }
-      })
-    })
+    this.props.toggleTodo(id)
   }
 
   changeNewTodoName = newTodoName => {
@@ -106,12 +89,8 @@ class HomeScreen extends React.Component {
     if (newTodoName === null) {
       return
     }
-    this.setState({
-      TEMP_ITEMS: [
-        { id: uuidv4(), name: newTodoName, complete: false },
-        ...this.state.TEMP_ITEMS,
-      ],
-    })
+    this.props.createTodo(newTodoName)
+    this.setState({ newTodoName: null })
   }
 
   render() {
@@ -121,6 +100,7 @@ class HomeScreen extends React.Component {
           <Input
             onSubmitEditing={this.createNewTodo}
             onChangeText={this.changeNewTodoName}
+            value={this.state.newTodoName}
             placeholder='你想完成什么?'
           />
         </Item>
@@ -129,7 +109,7 @@ class HomeScreen extends React.Component {
           style={{ width: '100%' }}
           ItemSeparatorComponent={() => (<Separator />)}
           keyExtractor={item => item.id}
-          data={this.state.TEMP_ITEMS}
+          data={this.props.todos}
           renderItem={({ item }) => (
             <ListItem
               style={{ alignItems: 'center' }}
@@ -158,29 +138,18 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = state => {
-  const {
-    username,
-    createdAt,
-    updatedAt,
-    emailVerified,
-    mobilePhoneVerified,
-    sessionToken,
-  } = state.user.userInfo
-
   return {
-    username,
-    createdAt,
-    updatedAt,
-    emailVerified,
-    mobilePhoneVerified,
-    sessionToken,
+    sessionToken: state.user.userInfo.sessionToken,
+    todos: state.todos.items,
+    fetchTodoError: state.todos.error,
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  logOut: () => {
-    dispatch(logOut())
-  },
+  fetchAll: () => { dispatch(fetchAll()) },
+  createTodo: (newTodoName) => { dispatch(createTodo(newTodoName)) },
+  logOut: () => { dispatch(logOut()) },
+  toggleTodo: (id) => { dispatch(toggleTodo(id)) },
 })
 
 const StyledHomeScreen = connectStyle('')(HomeScreen)
