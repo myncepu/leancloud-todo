@@ -18,7 +18,6 @@ import { logOut } from '../actions/user'
 import { toggleTodo, fetchAll, createTodo } from '../actions/todos'
 import { DropDownHolder }from '../utils/DropDownHolder'
 
-
 class HomeScreen extends React.Component {
   constructor(props) {
     super(props)
