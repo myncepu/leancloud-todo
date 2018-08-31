@@ -2,7 +2,7 @@ import React from 'react'
 import { StyleProvider } from 'native-base'
 import { createStackNavigator, createSwitchNavigator } from 'react-navigation'
 import getTheme from './native-base-theme/components'
-import orange from './native-base-theme/variables/orange'
+import myTheme from './native-base-theme/variables/myTheme'
 
 import AuthLoadingScreen from '../screens/AuthLoading'
 import LoaddingScreen from '../screens/Loadding'
@@ -50,7 +50,7 @@ const AppNavigator = createSwitchNavigator({
 })
 
 export default () => (
-  <StyleProvider style={getTheme(orange)}>
+  <StyleProvider style={getTheme(myTheme)}>
     <AppNavigator />
   </StyleProvider>
 )
