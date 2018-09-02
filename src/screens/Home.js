@@ -15,6 +15,7 @@ import {
 
 import { Separator } from '../components/List'
 import { logOut } from '../actions/user'
+import { logOutClearAllTodos } from '../actions/todos'
 import { toggleTodo, fetchAll, createTodo } from '../actions/todos'
 import { DropDownHolder }from '../utils/DropDownHolder'
 
@@ -147,7 +148,10 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   fetchAll: () => { dispatch(fetchAll()) },
   createTodo: (newTodoName) => { dispatch(createTodo(newTodoName)) },
-  logOut: () => { dispatch(logOut()) },
+  logOut: () => {
+    dispatch(logOut())
+    dispatch(logOutClearAllTodos())
+  },
   toggleTodo: (id) => { dispatch(toggleTodo(id)) },
 })
 

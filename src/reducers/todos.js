@@ -5,6 +5,7 @@ import {
   TODO_CREATE_FAIL,
   TODO_TOGGLE_SUCCESS,
   TODO_TOGGLE_FAIL,
+  TODO_USER_LOGOUT_CLEAR_ALL,
 } from '../actions/todos'
 
 const initialState = {
@@ -47,6 +48,8 @@ const todosReducer = (state = initialState, action) => {
         ...state,
         error: action.errorMessage
       }
+    case TODO_USER_LOGOUT_CLEAR_ALL:
+      return initialState
     default:
       return state
   }

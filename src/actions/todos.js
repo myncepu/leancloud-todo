@@ -16,6 +16,7 @@ export const TODO_TOGGLE_FAIL = 'TODO_TOGGLE_FAIL'
 export const TODO_TOGGLE_COMPLETE_ALL = 'TODO_TOGGLE_COMPLETE_ALL'
 export const TODO_UNDO_COMPLETE = 'TODO_UNDO_COMPLETE'
 export const TODO_UPDATE_TEXT = 'TODO_UPDATE_TEXT'
+export const TODO_USER_LOGOUT_CLEAR_ALL = 'TODO_USER_LOGOUT_CLEAR_ALL'
 
 // action creator
 export const createTodo = newTodoName => ({
@@ -30,6 +31,10 @@ export const fetchAll = () => ({
 export const toggleTodo = id => ({
   type: TODO_TOGGLE,
   id,
+})
+
+export const logOutClearAllTodos = () => ({
+  type: TODO_USER_LOGOUT_CLEAR_ALL,
 })
 
 // generator function
