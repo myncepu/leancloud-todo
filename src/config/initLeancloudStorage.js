@@ -1,4 +1,4 @@
-import AV from 'leancloud-storage'
+import AV from 'leancloud-storage/live-query'
 
 const APP_ID = 'xRp28ib4La5GhSklAG6StzkT-gzGzoHsz'
 const APP_KEY = '25dbkMyW0oeCKYT6pGH2C5nn'
