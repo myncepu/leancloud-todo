@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { StyleSheet, SafeAreaView } from 'react-native'
 import { Spinner } from 'native-base'
 import { connect } from 'react-redux'
-import { User } from 'leancloud-storage'
+import { User } from 'leancloud-storage/live-query'
 
 class LoaddingScreen extends React.Component {
   static propTypes = {
