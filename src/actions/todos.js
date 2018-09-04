@@ -73,16 +73,26 @@ const createSocketChannel = liveQuery => eventChannel((emit) => {
 // generator function
 export function* createTodoGenerator(action) {
   try {
+    // create a todo
     const Todo = AV.Object.extend('Todo')
     const todo = new Todo()
     todo.set('name', action.newTodoName)
     todo.set('complete', false)
+    todo.set('cleared', false)
     const user = yield AV.User.currentAsync()
     todo.set('user', user)
+    // create a ACL instance
+    var acl = new AV.ACL()
+    acl.setReadAccess(user, true)
+    acl.setWriteAccess(user, true)
+    // set ACL on todo
+    todo.setACL(acl)
+
     const todoFromServer = yield todo.save()
     const todoRedux = {
       name: todoFromServer.attributes.name,
       complete: todoFromServer.attributes.complete,
+      cleared: todoFromServer.attributes.cleared,
       id: todoFromServer.id,
       user: {
         username: todoFromServer.attributes.user.attributes.username,
