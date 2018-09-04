@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { FlatList, StyleSheet, SafeAreaView } from 'react-native'
+import { ScrollView, View, FlatList, StyleSheet, SafeAreaView } from 'react-native'
 import { connect } from 'react-redux'
-import { User } from 'leancloud-storage'
+import { User } from 'leancloud-storage/live-query'
+import Accordion from 'react-native-collapsible/Accordion'
+import { ifIphoneX } from 'react-native-iphone-x-helper'
 import {
   Item,
   ListItem,
@@ -15,7 +17,7 @@ import {
 
 import { Separator } from '../components/List'
 import { logOut } from '../actions/user'
-import { logOutClearAllTodos } from '../actions/todos'
+import { logOutClearAllTodos, clearFinishedTodos } from '../actions/todos'
 import { toggleTodo, fetchAll, createTodo } from '../actions/todos'
 import { DropDownHolder }from '../utils/DropDownHolder'
 
@@ -40,7 +42,7 @@ class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const logOut = navigation.getParam('logOut', () => null)
     return {
-      title: 'LeanTodo',
+      title: 'LEAN代办事项',
       headerStyle: {
         borderBottomWidth: 0,
       },
@@ -94,6 +96,30 @@ class HomeScreen extends React.Component {
   }
 
   render() {
+    const { finishedTodosNumber, totalTodosNumber } = this.props
+
+    const TodoList = ({ todos }) => (
+      <FlatList
+        style={{ width: '100%' }}
+        contentContainerStyle={{ justifyContent: 'space-between' }}
+        ItemSeparatorComponent={() => (<Separator />)}
+        keyExtractor={item => item.id}
+        data={todos}
+        renderItem={({ item }) => (
+          <ListItem
+            style={{ alignItems: 'center' }}
+            onPress={() => this.handleTodoItemPress(item.id)}
+          >
+            <Icon
+              style={{ fontSize: 20, paddingRight: 10 }}
+              name={`ios-checkmark-circle${item.complete ? '' : '-outline'}`}
+            />
+            <Text>{item.name}</Text>
+          </ListItem>
+        )}
+      />
+    )
+
     return (
       <SafeAreaView style={styles.container}>
         <Item>
@@ -105,24 +131,33 @@ class HomeScreen extends React.Component {
           />
         </Item>
 
-        <FlatList
-          style={{ width: '100%' }}
-          ItemSeparatorComponent={() => (<Separator />)}
-          keyExtractor={item => item.id}
-          data={this.props.todos}
-          renderItem={({ item }) => (
-            <ListItem
-              style={{ alignItems: 'center' }}
-              onPress={() => this.handleTodoItemPress(item.id)}
-            >
-              <Icon
-                style={{ fontSize: 20, paddingRight: 10 }}
-                name={`ios-checkmark-circle${item.complete ? '' : '-outline'}`}
-              />
-              <Text>{item.name}</Text>
-            </ListItem>
-          )}
-        />
+        <ScrollView style={{ width: '100%' }}>
+          <TodoList todos={this.props.unfinishedTodos} />
+
+          <Accordion
+            sections={[{ title: '已完成', content: '....' }]}
+            underlayColor='#999'
+            renderHeader={(section, _, isActive) => (
+              <View style={styles.collapsibleHeader}>
+                <Text>{section.title}</Text>
+                <Icon name={`ios-arrow-${isActive ? 'up' : 'down'}`} />
+              </View>
+            )}
+            renderContent={() => (
+              <TodoList todos={this.props.finishedTodos} />
+            )}
+          />
+        </ScrollView>
+
+        <View style={styles.footerContainer}>
+          <View style={styles.footer}>
+            <Text>{`${finishedTodosNumber} / ${totalTodosNumber}`}</Text>
+            <Button transparent onPress={this.props.clearFinishedTodos}>
+              <Text>{`清除已完成 (${finishedTodosNumber})`}</Text>
+            </Button>
+          </View>
+        </View>
+
       </SafeAreaView>
     )
   }
@@ -134,13 +169,48 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
   },
+  collapsibleHeader: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 15,
+    paddingHorizontal: 15,
+    backgroundColor: '#f9f9f9',
+    height: 50,
+    borderTopColor: '#999',
+    borderTopWidth: 0.5,
+    flexDirection: 'row',
+  },
+  footerContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: ifIphoneX(34, 0),
+  },
+  footer: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    backgroundColor: '#f9f9f9',
+    height: 50,
+    borderTopColor: '#999',
+    borderTopWidth: 0.5,
+    flexDirection: 'row',
+  }
 })
 
 const mapStateToProps = state => {
+  const todos = state.todos.items.filter(todo => todo.cleared === false)
+  const totalTodosNumber = todos.length
+  const finishedTodos = todos.filter(todo => todo.complete === true)
+  const unfinishedTodos = todos.filter(todo => todo.complete === false)
+  const finishedTodosNumber = finishedTodos.length
   return {
     sessionToken: state.user.userInfo.sessionToken,
-    todos: state.todos.items,
     fetchTodoError: state.todos.error,
+    finishedTodos,
+    unfinishedTodos,
+    totalTodosNumber,
+    finishedTodosNumber,
   }
 }
 
@@ -151,6 +221,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(logOut())
     dispatch(logOutClearAllTodos())
   },
+  clearFinishedTodos: () => { dispatch(clearFinishedTodos()) },
   toggleTodo: (id) => { dispatch(toggleTodo(id)) },
 })
 
