@@ -8,8 +8,8 @@ import {
   TODO_USER_LOGOUT_CLEAR_ALL,
   TODO_CLEAR_FINISHED_SUCCESS,
   TODO_CLEAR_FINISHED_FAIL,
-  TODO_START_CHANNEL,
-  TODO_STOP_CHANNEL,
+  // TODO_START_CHANNEL,
+  // TODO_STOP_CHANNEL,
 } from '../actions/todos'
 
 const initialState = {
@@ -32,8 +32,8 @@ const todosReducer = (state = initialState, action) => {
     case TODO_CREATE_SUCCESS:
       return {
         items: [
-          action.todo,
           ...state.items,
+          action.todo,
         ],
         error: '',
       }
