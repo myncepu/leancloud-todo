@@ -1,5 +1,5 @@
-import { takeEvery, put } from 'redux-saga/effects'
-import { User } from 'leancloud-storage'
+import { takeLatest, takeEvery, put } from 'redux-saga/effects'
+import { User } from 'leancloud-storage/live-query'
 
 import {
   LOGIN_REQUEST,
@@ -16,6 +16,9 @@ import {
   createTodoGenerator,
   TODO_TOGGLE,
   toggleTodoGenerator,
+  TODO_CLEAR_FINISHED,
+  clearFinishedTodosGenerator,
+  // watchOnTodosUpdate,
 } from '../actions/todos'
 
 function* login(action) {
@@ -55,9 +58,14 @@ function* register(action) {
 }
 
 export default function* rootSaga() {
-  yield takeEvery(LOGIN_REQUEST, login)
-  yield takeEvery(REGISTER_REQUEST, register)
-  yield takeEvery(TODO_FETCH_ALL, fetchAllGenerator)
+  yield takeLatest(LOGIN_REQUEST, login)
+  yield takeLatest(REGISTER_REQUEST, register)
+  yield takeLatest(TODO_FETCH_ALL, fetchAllGenerator)
+
+  // TODO: live-query doesn't work
+  // yield takeLatest(TODO_FETCH_ALL, watchOnTodosUpdate)
+
   yield takeEvery(TODO_CREATE, createTodoGenerator)
   yield takeEvery(TODO_TOGGLE, toggleTodoGenerator)
+  yield takeEvery(TODO_CLEAR_FINISHED, clearFinishedTodosGenerator)
 }
