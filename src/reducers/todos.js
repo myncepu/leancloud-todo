@@ -6,6 +6,10 @@ import {
   TODO_TOGGLE_SUCCESS,
   TODO_TOGGLE_FAIL,
   TODO_USER_LOGOUT_CLEAR_ALL,
+  TODO_CLEAR_FINISHED_SUCCESS,
+  TODO_CLEAR_FINISHED_FAIL,
+  TODO_START_CHANNEL,
+  TODO_STOP_CHANNEL,
 } from '../actions/todos'
 
 const initialState = {
@@ -44,6 +48,16 @@ const todosReducer = (state = initialState, action) => {
         error: '',
       }
     case TODO_TOGGLE_FAIL:
+      return {
+        ...state,
+        error: action.errorMessage
+      }
+    case TODO_CLEAR_FINISHED_SUCCESS:
+      return {
+        items: action.todosAfterClear,
+        error: '',
+      }
+    case TODO_CLEAR_FINISHED_FAIL:
       return {
         ...state,
         error: action.errorMessage
