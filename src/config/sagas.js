@@ -18,7 +18,7 @@ import {
   toggleTodoGenerator,
   TODO_CLEAR_FINISHED,
   clearFinishedTodosGenerator,
-  // watchOnTodosUpdate,
+  watchOnTodosUpdate,
 } from '../actions/todos'
 
 function* login(action) {
@@ -63,7 +63,7 @@ export default function* rootSaga() {
   yield takeLatest(TODO_FETCH_ALL, fetchAllGenerator)
 
   // TODO: live-query doesn't work
-  // yield takeLatest(TODO_FETCH_ALL, watchOnTodosUpdate)
+  yield takeLatest(TODO_FETCH_ALL, watchOnTodosUpdate)
 
   yield takeEvery(TODO_CREATE, createTodoGenerator)
   yield takeEvery(TODO_TOGGLE, toggleTodoGenerator)
