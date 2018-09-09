@@ -11,6 +11,7 @@ import rootSaga from './sagas'
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist: ['network'],
 }
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
