@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`changeConectionStatus creates a properly formatted action 1`] = `
+Object {
+  "connectionInfo": undefined,
+  "type": "CHANGE_CONNECTION_STATUS",
+}
+`;
