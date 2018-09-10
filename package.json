@@ -18,7 +18,8 @@
     "eject": "react-native-scripts eject",
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --silent --coverage && open coverage/lcov-report/index.html"
   },
   "jest": {
     "preset": "jest-expo",
@@ -27,7 +28,8 @@
     ],
     "transformIgnorePatterns": [
       "node_modules/(?!react-native|native-base-shoutem-theme|react-navigation|@shoutem/animation|@shoutem/ui|tcomb-form-native)"
-    ]
+    ],
+    "collectCoverageFrom": ["src/**/*.js"]
   },
   "dependencies": {
     "expo": "^27.0.1",
