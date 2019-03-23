@@ -1,11 +1,13 @@
 import AV from 'leancloud-storage/live-query'
 import { eventChannel } from 'redux-saga'
-import { take, select, put } from 'redux-saga/effects'
+import { take, select, put, call } from 'redux-saga/effects'
 
+export const TODO_SUBSCRIPTION_ERROR = 'TODO_SUBSCRIPTION_ERROR'
 export const TODO_CREATE = 'TODO_CREATE'
 export const TODO_CREATE_SUCCESS = 'TODO_CREATE_SUCCESS'
 export const TODO_CREATE_FAIL = 'TODO_CREATE_FAIL'
 export const TODO_FETCH_ALL = 'TODO_FETCH_ALL'
+export const TODO_NEW_FROM_SERVER = 'TODO_NEW_FROM_SERVER'
 export const TODO_FETCH_ALL_SUCCESS = 'TODO_FETCH_ALL_SUCCESS'
 export const TODO_FETCH_ALL_FAIL = 'TODO_FETCH_ALL_FAIL'
 export const TODO_COMPLETE = 'TODO_COMPLETE'
@@ -55,20 +57,20 @@ export const stopTodoChannel = () => ({
   type: TODO_STOP_CHANNEL,
 })
 
-const updateTodoHandler = updatedTodo => {
-  // eslint-disable-next-line
-  console.log('updatedTodo', updatedTodo)
-}
 // This is how channel is created
-// eslint-disable-next-line
-const createSocketChannel = liveQuery => eventChannel((emit) => {
-  liveQuery.on('update', updateTodoHandler)
-  liveQuery.on('create', updateTodoHandler)
-  return () => {
-    liveQuery.off('update', updateTodoHandler)
-    liveQuery.off('create', updateTodoHandler)
-  }
-})
+const createSocketChannel = liveQuery =>
+  eventChannel(emit => {
+    const handler = data => {
+      emit(data)
+    }
+    liveQuery.on('update', handler)
+    liveQuery.on('create', handler)
+    return () => {
+      // liveQuery.off('update', updateTodoHandler)
+      // liveQuery.off('create', updateTodoHandler)
+      call(liveQuery.unsubscribe)
+    }
+  })
 
 // generator function
 export function* createTodoGenerator(action) {
@@ -99,13 +101,21 @@ export function* createTodoGenerator(action) {
         id: todoFromServer.attributes.user.id,
         updatedAt: todoFromServer.attributes.user.updatedAt,
         createdAt: todoFromServer.attributes.user.createdAt,
-      }
+      },
     }
     yield put({ type: TODO_CREATE_SUCCESS, todo: todoRedux })
-  } catch(e) {
+  } catch (e) {
     yield put({ type: TODO_CREATE_FAIL, errorMessage: e.message })
   }
 }
+
+const serverTodoToReduxStoreTodo = todoFromServer => ({
+  ...todoFromServer.attributes,
+  id: todoFromServer.id,
+  user: {
+    id: todoFromServer.attributes.user.id,
+  },
+})
 
 export function* fetchAllGenerator() {
   try {
@@ -113,40 +123,42 @@ export function* fetchAllGenerator() {
     const query = new AV.Query('Todo')
     query.equalTo('user', currentUser)
     const todosFromServer = yield query.find()
-    const todosRedux = todosFromServer.map(todoFromServer => ({
-      ...todoFromServer.attributes,
-      id: todoFromServer.id,
-      user: {
-        id: todoFromServer.attributes.user.id,
-      }
-    }))
+    const todosRedux = todosFromServer.map(serverTodoToReduxStoreTodo)
     yield put({ type: TODO_FETCH_ALL_SUCCESS, todos: todosRedux })
-
-    // TODO: subscribe all todos' update
-    // const liveQuery = yield currentUserTodos.subscribe()
-  } catch(e) {
+  } catch (e) {
     yield put({ type: TODO_FETCH_ALL_FAIL, errorMessage: e.message })
   }
 }
 
 export function* watchOnTodosUpdate() {
   try {
-    const currentUser = yield AV.User.currentAsync()
-    const query = new AV.Query('Todo').equalTo('user', currentUser)
-    const liveQuery = yield query.subscribe()
+    // eslint-disable-next-line no-console
+    console.log('watchOnTodosUpdate')
+    const query = new AV.Query('Todo')
+    const liveQuery = yield call([query, 'subscribe'])
+    // eslint-disable-next-line no-console
+    console.log('after liveQuery.subscribe')
     const socketChannel = createSocketChannel(liveQuery)
     while (true) {
       const payload = yield take(socketChannel)
       // eslint-disable-next-line
       console.log('payload', payload)
-      // yield put({ type: INCOMING_PONG_PAYLOAD, payload })
+      yield put({
+        type: 'TODO_NEW_FROM_SERVER',
+        todo: serverTodoToReduxStoreTodo(payload),
+      })
       // yield fork(pong, socket)
     }
   } catch (e) {
-    // eslint-disable-next-line
-    console.log('watchOnTodosUpdate', e)
+    yield put({
+      type: TODO_SUBSCRIPTION_ERROR,
+      errorMessage: e.message,
+    })
+    // eslint-disable-next-line no-console
+    console.log('watchOnTodosUpdate error.message', e.message)
+    // eslint-disable-next-line no-console
+    console.log('watchOnTodosUpdate error', e)
   }
-
 }
 
 export function* toggleTodoGenerator(action) {
@@ -167,7 +179,7 @@ export function* toggleTodoGenerator(action) {
       }
     })
     yield put({ type: TODO_TOGGLE_SUCCESS, toggledTodos })
-  } catch(e) {
+  } catch (e) {
     yield put({ type: TODO_TOGGLE_FAIL, errorMessage: e.message })
   }
 }
@@ -188,7 +200,7 @@ export function* clearFinishedTodosGenerator() {
     }
 
     yield put({ type: TODO_CLEAR_FINISHED_SUCCESS, todosAfterClear })
-  } catch(e) {
+  } catch (e) {
     yield put({ type: TODO_CLEAR_FINISHED_FAIL, errorMessage: e.message })
   }
 }
