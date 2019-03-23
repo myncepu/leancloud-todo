@@ -18,7 +18,7 @@ import {
   toggleTodoGenerator,
   TODO_CLEAR_FINISHED,
   clearFinishedTodosGenerator,
-  // watchOnTodosUpdate,
+  watchOnTodosUpdate,
 } from '../actions/todos'
 
 function* login(action) {
@@ -33,7 +33,7 @@ function* login(action) {
       sessionToken: response._sessionToken,
     }
     yield put({ type: LOGIN_SUCCESS, userInfo: userInfo })
-  } catch(e) {
+  } catch (e) {
     yield put({ type: LOGIN_FAIL, errorMessage: e.message })
   }
 }
@@ -52,7 +52,7 @@ function* register(action) {
       updatedAt: response.updatedAt,
     }
     yield put({ type: REGISTER_SUCCESS, userInfo })
-  } catch(e) {
+  } catch (e) {
     yield put({ type: REGISTER_FAIL, errorMessage: e.message })
   }
 }
@@ -63,7 +63,7 @@ export default function* rootSaga() {
   yield takeLatest(TODO_FETCH_ALL, fetchAllGenerator)
 
   // TODO: live-query doesn't work
-  // yield takeLatest(TODO_FETCH_ALL, watchOnTodosUpdate)
+  yield takeLatest(TODO_FETCH_ALL, watchOnTodosUpdate)
 
   yield takeEvery(TODO_CREATE, createTodoGenerator)
   yield takeEvery(TODO_TOGGLE, toggleTodoGenerator)
