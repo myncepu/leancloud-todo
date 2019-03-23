@@ -17,7 +17,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 // Middleware
 const sagaMiddleware = createSagaMiddleware()
-const middlewares = [ sagaMiddleware ]
+const middlewares = [sagaMiddleware]
 if (process.env.NODE_ENV === 'development') {
   const logger = createLogger({ diff: true })
   middlewares.push(logger)
