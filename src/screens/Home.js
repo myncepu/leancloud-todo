@@ -1,6 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ScrollView, View, FlatList, StyleSheet, SafeAreaView } from 'react-native'
+import {
+  ScrollView,
+  View,
+  FlatList,
+  StyleSheet,
+  SafeAreaView,
+} from 'react-native'
 import { connect } from 'react-redux'
 import { User } from 'leancloud-storage/live-query'
 import Accordion from 'react-native-collapsible/Accordion'
@@ -19,7 +25,7 @@ import { Separator } from '../components/List'
 import { logOut } from '../actions/user'
 import { logOutClearAllTodos, clearFinishedTodos } from '../actions/todos'
 import { toggleTodo, fetchAll, createTodo } from '../actions/todos'
-import { DropDownHolder }from '../utils/DropDownHolder'
+import { DropDownHolder } from '../utils/DropDownHolder'
 
 class HomeScreen extends React.Component {
   constructor(props) {
@@ -28,6 +34,7 @@ class HomeScreen extends React.Component {
       newTodoName: null,
     }
   }
+
   static propTypes = {
     sessionToken: PropTypes.string,
     todos: PropTypes.array,
@@ -47,11 +54,13 @@ class HomeScreen extends React.Component {
         borderBottomWidth: 0,
       },
       headerRight: (
-        <Button transparent
+        <Button
+          transparent
           onPress={() => {
             logOut()
             navigation.navigate('Login')
-          }}>
+          }}
+        >
           <Text>退出登陆</Text>
         </Button>
       ),
@@ -63,12 +72,27 @@ class HomeScreen extends React.Component {
     this.props.navigation.navigate('Login')
   }
 
-  logInWithSessionToken = async (sessionToken) => {
+  logInWithSessionToken = async sessionToken => {
     try {
       await User.become(sessionToken)
     } catch (e) {
       DropDownHolder.getDropDown().alertWithType('error', '错误', e.message)
       this.props.navigation.navigate('Login')
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    // Typical usage (don't forget to compare props):
+    console.log({ errorMessage: this.props.errorMessage })
+    if (
+      this.props.errorMessage !== prevProps.errorMessage &&
+      this.props.errorMessage !== ''
+    ) {
+      DropDownHolder.getDropDown().alertWithType(
+        'error',
+        '错误',
+        this.props.errorMessage
+      )
     }
   }
 
@@ -102,7 +126,7 @@ class HomeScreen extends React.Component {
       <FlatList
         style={{ width: '100%' }}
         contentContainerStyle={{ justifyContent: 'space-between' }}
-        ItemSeparatorComponent={() => (<Separator />)}
+        ItemSeparatorComponent={() => <Separator />}
         keyExtractor={item => item.id}
         data={todos}
         renderItem={({ item }) => (
@@ -127,7 +151,7 @@ class HomeScreen extends React.Component {
             onSubmitEditing={this.createNewTodo}
             onChangeText={this.changeNewTodoName}
             value={this.state.newTodoName}
-            placeholder='你想完成什么?'
+            placeholder="你想完成什么?"
           />
         </Item>
 
@@ -136,16 +160,14 @@ class HomeScreen extends React.Component {
 
           <Accordion
             sections={[{ title: '已完成', content: '....' }]}
-            underlayColor='#999'
+            underlayColor="#999"
             renderHeader={(section, _, isActive) => (
               <View style={styles.collapsibleHeader}>
                 <Text>{section.title}</Text>
                 <Icon name={`ios-arrow-${isActive ? 'up' : 'down'}`} />
               </View>
             )}
-            renderContent={() => (
-              <TodoList todos={this.props.finishedTodos} />
-            )}
+            renderContent={() => <TodoList todos={this.props.finishedTodos} />}
           />
         </ScrollView>
 
@@ -157,7 +179,6 @@ class HomeScreen extends React.Component {
             </Button>
           </View>
         </View>
-
       </SafeAreaView>
     )
   }
@@ -195,7 +216,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#999',
     borderTopWidth: 0.5,
     flexDirection: 'row',
-  }
+  },
 })
 
 const mapStateToProps = state => {
@@ -204,6 +225,7 @@ const mapStateToProps = state => {
   const finishedTodos = todos.filter(todo => todo.complete === true)
   const unfinishedTodos = todos.filter(todo => todo.complete === false)
   const finishedTodosNumber = finishedTodos.length
+  const errorMessage = state.todos.error
   return {
     sessionToken: state.user.userInfo.sessionToken,
     fetchTodoError: state.todos.error,
@@ -211,19 +233,31 @@ const mapStateToProps = state => {
     unfinishedTodos,
     totalTodosNumber,
     finishedTodosNumber,
+    errorMessage,
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  fetchAll: () => { dispatch(fetchAll()) },
-  createTodo: (newTodoName) => { dispatch(createTodo(newTodoName)) },
+  fetchAll: () => {
+    dispatch(fetchAll())
+  },
+  createTodo: newTodoName => {
+    dispatch(createTodo(newTodoName))
+  },
   logOut: () => {
     dispatch(logOut())
     dispatch(logOutClearAllTodos())
   },
-  clearFinishedTodos: () => { dispatch(clearFinishedTodos()) },
-  toggleTodo: (id) => { dispatch(toggleTodo(id)) },
+  clearFinishedTodos: () => {
+    dispatch(clearFinishedTodos())
+  },
+  toggleTodo: id => {
+    dispatch(toggleTodo(id))
+  },
 })
 
 const StyledHomeScreen = connectStyle('')(HomeScreen)
-export default connect(mapStateToProps, mapDispatchToProps)(StyledHomeScreen)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(StyledHomeScreen)
